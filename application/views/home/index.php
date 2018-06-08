@@ -86,6 +86,17 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
         <p>The corresponding controller for this page is found at:</p>
         <code>application/controllers/Home.php</code>
+        <p>Configurations:</p>
+        <code>
+            APP_NAME: <?=APP_NAME?><br>
+            APP_DOMAIN_NAME: <?=APP_DOMAIN_NAME?><br>
+            APP_PHONE_NUMBER: <?=APP_PHONE_NUMBER?><br>
+            APP_MAIL_ADDRESS: <?=APP_MAIL_ADDRESS?><br>
+            BLOG_NAME: <?=BLOG_NAME?><br>
+            <hr>
+            <p>The corresponding file for the configuration is found at:</p>
+            <code>application/config/constants.php</code>
+        </code>
 
     </div>
 

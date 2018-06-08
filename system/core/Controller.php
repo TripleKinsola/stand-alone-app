@@ -50,13 +50,44 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @link		http://codeigniter.com/user_guide/general/controllers.html
  */
 class CI_Controller {
-
 	/**
 	 * Reference to the CI singleton
 	 *
 	 * @var	object
 	 */
 	private static $instance;
+
+	/////////////////////////////
+	/// Pre-Defined Properties and Methods///
+	/////////////////////////////
+	public $view_folder = "";
+	public $person = array();
+	public $data = array();
+	public $sec_title = "Welcome";
+	public $title = APP_NAME;
+	public $view = "index";
+	public $place = "";
+
+	public $error = array();
+
+	public $encryption;
+	public $token = "";
+	public $de_tok = "";
+	public $user_in = false;
+
+	public function render_template(){
+		$this->load->view('templates/head');
+		$this->load->view($this->view_folder.'/'.$this->view);
+		$this->load->view('templates/foot');
+	}
+	public function render_dash_template(){
+		$this->load->view('templates/dash_head');
+		$this->load->view($this->view_folder.'/'.$this->view);
+		$this->load->view('templates/dash_foot');
+	}
+
+	//////////////////////////////
+	public $master_settings = array();
 
 	/**
 	 * Class constructor
@@ -78,8 +109,71 @@ class CI_Controller {
 		$this->load =& load_class('Loader', 'core');
 		$this->load->initialize();
 		log_message('info', 'Controller Class Initialized');
-	}
 
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		//////////////  Super Controller settings and pre-defines   ////////////////////////////////////
+//		$this->master_settings = $this->master->select_by_id("settings", 7, "table_key");
+//		$this->master_settings['si'] == 1 ? show_404() : "";
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		if($this->session->userdata('logged_in')){
+			$this->user_in = true;
+			$this->person = $this->master->select_by_id("users", $this->session->userdata('roof'));
+		}
+
+		$this->encryption = new Encryption();
+		//////////////////////////////////////////////////////////////
+		/*
+		Token Security Measures; To prevent crawlers and false form submitting
+		*/
+		///////////////////////////////////////////////////////////////
+		$this->token = encrypt(TOKEN);
+		$this->de_tok = decrypt($this->token);
+		if(isset($_POST['make'])){
+			if(!isset($_POST['token'])){
+				show_error($message="Something certainly went wrong.", $status_code="500", $heading = 'An Error Was Encountered.');
+			}else{
+				$d_tok = decrypt($_POST['token']);
+				if($d_tok != $this->de_tok){
+					show_error($message="Something certainly went wrong.", $status_code="500", $heading = 'An Error Was Encountered.');
+				}
+			}
+		}
+
+		//////////////////////////////////////////////////////////////////////////////////////////////////////////
+	}
+	protected function user_shud_be_logged_in($redirect_if_not_in = ""){
+		if(!$this->user_in){
+			flash_hash("Please login first.");
+			!empty($redirect_if_not_in) ? redirect(BASEURL."identify?redirect=".$redirect_if_not_in) : redirect(BASEURL."identify");
+		}
+	}
+	protected function user_shud_be_logged_in_and_be_sudo(){
+		if($this->user_in){
+			if($this->person['level'] != SUDO){
+				flash_hash("Please login first.");
+				!empty($redirect_if_not_in) ? redirect(BASEURL."identify?redirect=".$redirect_if_not_in) : redirect(BASEURL."login");
+			}
+		}else{
+			flash_hash("Please login first.");
+			!empty($redirect_if_not_in) ? redirect(BASEURL."identify?redirect=".$redirect_if_not_in) : redirect(BASEURL."login");
+		}
+	}
+	protected function site_state(){
+		//Site state: ON or Offline?
+		switch($this->master_settings){
+			case !$this->master_settings['site_state']:
+				show_error("Currently offline.", 500, "We are currently working on a little upgrade...");
+				break;
+
+			default:
+				//
+				break;
+		}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	}
 	// --------------------------------------------------------------------
 
 	/**
@@ -88,9 +182,9 @@ class CI_Controller {
 	 * @static
 	 * @return	object
 	 */
+
 	public static function &get_instance()
 	{
 		return self::$instance;
 	}
-
 }

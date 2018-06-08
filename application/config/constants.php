@@ -84,3 +84,18 @@ define('EXIT_USER_INPUT', 7); // invalid user input
 define('EXIT_DATABASE', 8); // database error
 define('EXIT__AUTO_MIN', 9); // lowest automatically-assigned error code
 define('EXIT__AUTO_MAX', 125); // highest automatically-assigned error code
+
+
+
+define('APP_KEY', '$_rose451m1_$');
+define('TOKEN', APP_KEY.'633k3r8y73');
+
+define('APP_NAME', 'AppName');
+define('APP_DOMAIN_NAME', '');
+define('APP_PHONE_NUMBER', '');
+define('APP_MAIL_ADDRESS', '');
+define('BLOG_NAME', '');
+
+define('NCURRENCY', '&#8358;');
+define('DCURRENCY', '&dollar;');
+define('PCURRENCY', '&pound;');
